@@ -14,6 +14,15 @@ import scipy.linalg as sl
 from QuickBurst.lapack_wrappers import solve_triangular
 import copy
 
+#stuff mitch added, I hope it works
+import logging
+qb_logger = logging.getLogger('QB_logger')
+logging.basicConfig(filename = "QB.log",
+                    filemode="a",
+                    level = logging.ERROR,
+                    format='%(levelname)s - %(message)s')
+
+
 from enterprise import constants as const
 from enterprise_extensions.frequentist import Fe_statistic as FeStat
 from enterprise.signals import utils
@@ -97,6 +106,7 @@ class QuickBurst:
             self.invTN.append(T * Ndiag)
             Sigma = TNT + (np.diag(phiinv) if phiinv.ndim == 1 else phiinv)
             chol_Sigma,lower = sl.cho_factor(Sigma.T,lower=True,overwrite_a=True,check_finite=False)
+            
             self.CholSigma.append(chol_Sigma)
 
         self.CholSigma_previous = np.copy(self.CholSigma)
@@ -215,7 +225,12 @@ class QuickBurst:
             self.params_previous = np.copy(self.params)
             self.params = d0
 
-            _ = self.TN_calculator()
+            
+            try:
+                _ = self.TN_calculator()
+            except sl.LinAlgError as e:
+                qb_logger.error({e}, exc_info=True)
+                return (-1.0)*np.inf
 
         self.glitch_pulsars_previous = np.copy(self.glitch_pulsars)
         if glitch_change:
@@ -437,7 +452,11 @@ class QuickBurst:
 
         #If varying any noise, recalculate all of M and N
         if self.rn_vary  or self.wn_vary:
-            temp_logdetphi = self.TN_calculator()
+            try:
+                temp_logdetphi = self.TN_calculator()
+            except sl.LinAlgError as e:
+                qb_logger.error({e}, exc_info=True)
+                return (-1.0)*np.inf
             dif_flag = np.ones((self.Nwavelet + self.Nglitch))
         if 1 in dif_flag:
             self.NN_previous = np.copy(self.NN)
