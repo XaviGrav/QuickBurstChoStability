@@ -2701,7 +2701,7 @@ def get_pta(pulsars, vary_white_noise=True, include_equad = False, include_ecorr
 
         #This should be setting amplitude and gamma to default values
         pl = utils.powerlaw(log10_A=log10_A, gamma=gamma)
-        per_psr_rn = gp_signals.FourierBasisGP(pl, components=30, Tspan=Tspan)
+        per_psr_rn = gp_signals.FourierBasisGP(pl, components=30, Tspan=4*Tspan)
 
     #adding red noise if included
     if include_rn:
