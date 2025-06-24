@@ -51,8 +51,6 @@ noise_file = "/home/mitch/pulsar_data/15year_data_pkl_quickburst/v1p1_all_dict.j
 with open(noise_file, 'r') as h:
     noise_params = json.load(h)
 
-
-#Setting dataset max time and reference time
 #Setting dataset max time and reference time
 maximum = 0
 minimum = np.inf
@@ -68,9 +66,16 @@ print(tref/3600/24/365)
 t0_max = (maximum - minimum)/365/24/3600
 print(t0_max)
 
-#for psr in psrs_total:
-    #print(psr.name)
-psrs= [psrs_total[1]]
+#GET A SINGLE PULSAR TO RUN
+psr_name = "J1614-2230"
+for psr in psrs_total:
+    if psr.name == psr_name:
+        psrs = [psr]
+        break
+
+#GET A RANGE OF PULSARS    
+#psrs= psrs_total[0:42]
+
 print(psrs[0].name)
 
 #Number of shape parameter updates
