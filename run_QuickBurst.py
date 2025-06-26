@@ -120,7 +120,7 @@ for psr in psrs:
     savefile = "chain_1_more"
     savepath = filepath + savefile #NOTE: DO NOT ADD FILE EXTENSION
 
-    #Creates the logger for the program and configures it.
+    #Creates the logger for the program and configures it.c
     qb_logger = logging.getLogger('QB_logger')
     logging.basicConfig(filename = filepath + "/QB.log",
                         filemode="a",
