@@ -1,0 +1,13 @@
+[
+    [
+        "max 0 wavelets ",
+        "max 3 glitches ",
+        "projection_updates/shape_update=10000",
+        "thinning=10000",
+        "jumps: glitch rj, glitch tau, PT swap, fast, noise",
+        "noise jump weight (DE, fish, prior) = (0.3,0.6,0.1)"
+    ],
+    [
+        "Uniform wavelet amp priors: [-10, -5]"
+    ]
+]

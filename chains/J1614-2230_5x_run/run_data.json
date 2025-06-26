@@ -1,0 +1,79 @@
+{
+    "N_slow": 500000,
+    "T_max": 4,
+    "n_chain": 5,
+    "max_n_wavelet": 3,
+    "min_n_wavelet": 0,
+    "n_wavelet_start": 0,
+    "glitch_RJ_weight": 1,
+    "regular_weight": 1,
+    "noise_jump_weight": 2,
+    "PT_swap_weight": 1,
+    "DE_prob": 0.3,
+    "fisher_prob": 0.6,
+    "prior_draw_prob": 0.1,
+    "de_history_size": 2500,
+    "T_ladder": null,
+    "T_dynamic": false,
+    "T_dynamic_nu": 300,
+    "T_dynamic_t0": 1000,
+    "PT_hist_length": 100,
+    "tau_scan_proposal_weight": 1,
+    "glitch_tau_scan_proposal_weight": 1,
+    "prior_recovery": false,
+    "wavelet_amp_prior": "uniform",
+    "rn_amp_prior": "log-uniform",
+    "per_psr_rn_amp_prior": "log-uniform",
+    "rn_log_amp_range": [
+        -18,
+        -11
+    ],
+    "per_psr_rn_log_amp_range": [
+        -18,
+        -11
+    ],
+    "wavelet_log_amp_range": [
+        -10.0,
+        -5.0
+    ],
+    "vary_white_noise": true,
+    "efac_start": null,
+    "include_equad": true,
+    "include_ecorr": true,
+    "include_efac": true,
+    "wn_backend_selection": true,
+    "include_rn": false,
+    "vary_rn": false,
+    "rn_params": [
+        -13.0,
+        1.0
+    ],
+    "include_per_psr_rn": true,
+    "vary_per_psr_rn": true,
+    "max_n_glitch": 3,
+    "glitch_amp_prior": "uniform",
+    "glitch_log_amp_range": [
+        -10.0,
+        -5.0
+    ],
+    "equad_range": [
+        -8.5,
+        -5
+    ],
+    "ecorr_range": [
+        -8.5,
+        -5
+    ],
+    "n_glitch_prior": "flat",
+    "n_glitch_start": "random",
+    "t0_min": 4.13353729233882,
+    "t0_max": 15.682648959273012,
+    "tref": 4597873784.535131,
+    "f0_min": 3.5e-09,
+    "f0_max": 1e-07,
+    "tau_min_in": 0.05,
+    "tau_max_in": 5.0,
+    "n_fish_update": 500000000,
+    "n_fast_to_slow": 10000,
+    "thin": 10000
+}

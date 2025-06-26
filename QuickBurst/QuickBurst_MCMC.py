@@ -25,7 +25,6 @@ from enterprise.signals import utils
 from enterprise.signals import deterministic_signals
 from enterprise.signals import selections
 from enterprise.signals.selections import Selection
-from enterprise_extensions import blocks
 
 from enterprise_extensions.frequentist import Fe_statistic
 
@@ -37,6 +36,7 @@ import os
 
 from QuickBurst import QuickBurst_lnlike as Quickburst
 from QuickBurst import QB_FastPrior
+from enterprise_extensions import blocks
 
 ################################################################################
 #
@@ -52,7 +52,7 @@ def run_qb(N_slow, T_max, n_chain, pulsars, max_n_wavelet=1, min_n_wavelet=0, n_
             include_rn=False, vary_rn=False, rn_params=[-13.0, 1.0], include_per_psr_rn=False, vary_per_psr_rn=False, per_psr_rn_start_file=None, jupyter_notebook=False,
             max_n_glitch=1, glitch_amp_prior='uniform', glitch_log_amp_range=[-18, -11], equad_range = [-8.5, -5], ecorr_range = [-8.5, -5], n_glitch_prior='flat', n_glitch_start='random',
             t0_min=0.0, t0_max=10.0, tref=53000*86400, glitch_tau_scan_file=None, TF_prior_file=None, f0_min=3.5e-9, f0_max=1e-7, tau_min_in=0.2, tau_max_in=5.0,
-            save_every_n=10, savepath=None, resume_from=None, start_from=None, n_status_update=100, n_fish_update=1000, n_fast_to_slow=1000, thin = 100):
+            save_every_n=10, savepath=None, resume_from=None, start_from=None, n_status_update=100, n_fish_update=1000, n_fast_to_slow=1000, thin = 100, write_run_parameters_to_file = True, data_directory = ""):
 
     """
     Function to perform markov-chain monte carlo sampling with for generic GW burst signals. Utilizes Class Functions from QuickBurst_lnlike.
@@ -194,6 +194,10 @@ def run_qb(N_slow, T_max, n_chain, pulsars, max_n_wavelet=1, min_n_wavelet=0, n_
         Number of projection parameter updates for every shape parameter update. [1000] by default.
     :param thin:
         Spacing between saved samples. If 10, saves every 10th sample. [100] by default.
+    :param write_run_parameters_to_file:
+        Option if you want to write the run parameters to a file.
+    :param data_directory:
+        This is the directory you want to save the chain run in
     """
 
     #scale steps to slow steps
@@ -201,6 +205,68 @@ def run_qb(N_slow, T_max, n_chain, pulsars, max_n_wavelet=1, min_n_wavelet=0, n_
     n_status_update = n_status_update*n_fast_to_slow
     n_fish_update = n_fish_update*n_fast_to_slow
     save_every_n = save_every_n*n_fast_to_slow
+
+    #Create a dict of all the run parameters
+    if write_run_parameters_to_file:
+        run_data = {}
+        run_data['N_slow'] = N_slow
+        run_data['T_max'] = T_max
+        run_data['n_chain'] = n_chain
+        run_data['max_n_wavelet'] = max_n_wavelet
+        run_data['min_n_wavelet'] = min_n_wavelet
+        run_data['n_wavelet_start'] = n_wavelet_start
+        run_data['glitch_RJ_weight'] = glitch_RJ_weight
+        run_data['regular_weight'] = regular_weight
+        run_data['noise_jump_weight'] = noise_jump_weight
+        run_data['PT_swap_weight'] = PT_swap_weight
+        run_data['DE_prob'] = DE_prob
+        run_data['fisher_prob'] = fisher_prob
+        run_data['prior_draw_prob'] = prior_draw_prob
+        run_data['de_history_size'] = de_history_size
+        run_data['T_ladder'] = T_ladder
+        run_data['T_dynamic'] = T_dynamic
+        run_data['T_dynamic_nu'] = T_dynamic_nu
+        run_data['T_dynamic_t0'] = T_dynamic_t0
+        run_data['PT_hist_length'] = PT_hist_length
+        run_data['tau_scan_proposal_weight'] = tau_scan_proposal_weight        
+        run_data['glitch_tau_scan_proposal_weight'] = glitch_tau_scan_proposal_weight
+        run_data['prior_recovery'] = prior_recovery
+        run_data['wavelet_amp_prior'] = wavelet_amp_prior
+        run_data['rn_amp_prior'] = rn_amp_prior
+        run_data['per_psr_rn_amp_prior'] = per_psr_rn_amp_prior
+        run_data['rn_log_amp_range'] = rn_log_amp_range
+        run_data['per_psr_rn_log_amp_range'] = per_psr_rn_log_amp_range
+        run_data['wavelet_log_amp_range'] = wavelet_log_amp_range
+        run_data['vary_white_noise'] = vary_white_noise
+        run_data['efac_start'] = efac_start
+        run_data['include_equad'] = include_equad
+        run_data['include_ecorr'] = include_ecorr
+        run_data['include_efac'] = include_efac
+        run_data['wn_backend_selection'] = wn_backend_selection
+        run_data['include_rn'] = include_rn
+        run_data['vary_rn'] = vary_rn
+        run_data['rn_params'] = rn_params
+        run_data['include_per_psr_rn'] = include_per_psr_rn
+        run_data['vary_per_psr_rn'] = vary_per_psr_rn
+        run_data['max_n_glitch'] = max_n_glitch
+        run_data['glitch_amp_prior'] = glitch_amp_prior
+        run_data['glitch_log_amp_range'] = glitch_log_amp_range
+        run_data['equad_range'] = equad_range
+        run_data['ecorr_range'] = ecorr_range
+        run_data['n_glitch_prior'] = n_glitch_prior
+        run_data['n_glitch_start'] = n_glitch_start
+        run_data['t0_min'] = t0_min
+        run_data['t0_max'] = t0_max
+        run_data['tref'] = tref
+        run_data['f0_min'] = f0_min
+        run_data['f0_max'] = f0_max
+        run_data['tau_min_in'] = tau_min_in
+        run_data['tau_max_in'] = tau_max_in
+        run_data['n_fish_update'] = n_fish_update
+        run_data['n_fast_to_slow'] = n_fast_to_slow
+        run_data['thin'] = thin
+        with open(data_directory + "run_data.json","w") as file:
+            json.dump(run_data, file, indent=4)
 
     #This is a global variable which keeps track of the index in order to update the history array
     global de_arr_itr

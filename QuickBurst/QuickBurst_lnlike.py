@@ -14,14 +14,7 @@ import scipy.linalg as sl
 from QuickBurst.lapack_wrappers import solve_triangular
 import copy
 
-#stuff mitch added, I hope it works
 import logging
-qb_logger = logging.getLogger('QB_logger')
-logging.basicConfig(filename = "QB.log",
-                    filemode="a",
-                    level = logging.ERROR,
-                    format='%(levelname)s - %(message)s')
-
 
 from enterprise import constants as const
 from enterprise_extensions.frequentist import Fe_statistic as FeStat
@@ -63,6 +56,9 @@ class QuickBurst:
         :param prior_recovery:
             If True, we return constant likelihood to be used for prior recovery diagnostic tests. [False] by default.
         """
+        #Get the logger
+        self.qb_logger = logging.getLogger('QB_logger')
+
         #model parameters that shouldn't change for a run
         self.pta = pta
         self.psrs = psrs

@@ -24,7 +24,6 @@ from enterprise.signals import white_signals
 from enterprise.signals import gp_signals
 from enterprise.signals import deterministic_signals
 import enterprise.constants as const
-from enterprise_extensions import blocks
 from enterprise_extensions import models as ee_models
 from enterprise_extensions import model_utils as ee_model_utils
 from enterprise_extensions import model_orfs
@@ -37,11 +36,12 @@ from enterprise.signals.deterministic_signals import Deterministic
 from enterprise.signals.parameter import function
 
 from PTMCMCSampler.PTMCMCSampler import PTSampler as ptmcmc
+from enterprise_extensions import blocks
 import re
 import sys
 sys.path.append("/home/mitch/QuickBurstWork/QuickBurstChoStability/")
 from QuickBurst import QuickBurst_MCMC as QuickBurst_MCMC
-
+import logging
 
 with open("/home/mitch/pulsar_data/15_year_data/psrs_trimmed_SNR99p.pkl", 'rb') as f:
     psrs_total = pickle.load(f)
@@ -79,7 +79,7 @@ for psr in psrs_total:
 print(psrs[0].name)
 
 #Number of shape parameter updates
-N_slow=int(1e5)
+N_slow=int(5e5)
 
 #How often to update fisher matrix proposals (based on shape parameter updates)
 n_fish_update = int(N_slow/10)
@@ -107,25 +107,25 @@ f_min = 3.5e-9 #1e-8
 #Load in tau scan proposal files
 ts_file = "/home/mitch/QuickBurstWork/QuickBurstChoStability/tau_scans/wavelets/PTA_tauscan.pkl"
 
+#The directory in which your chains are saved
+data_directory = "/home/mitch/QuickBurstWork/QuickBurstChoStability/chains/"
+
+
 # resuming_pulsar = 'J0030+0451'
 for psr in psrs:
     glitch_ts_file = f"/home/mitch/QuickBurstWork/QuickBurstChoStability/tau_scans/transients/{psr.name}/transients.pkl"
-    filepath = "/home/mitch/QuickBurstWork/QuickBurstChoStability/chains/{}/".format(psr.name)
+    filepath = "{}{}{}/".format(data_directory,psr.name,"_5x_run")
     print('Starting pulsar {}'.format(psr.name))
     os.makedirs(filepath, exist_ok = True)
-    savefile = "chain_1"
+    savefile = "chain_1_more"
     savepath = filepath + savefile #NOTE: DO NOT ADD FILE EXTENSION
-    
-    model_labels = []
-    #Tracking run settings
-    model_labels.append(["max 0 wavelets ", "max 3 glitches ", "projection_updates/shape_update=10000", "thinning=10000",  "jumps: glitch rj, glitch tau, PT swap, fast, noise", 
-                        "noise jump weight (DE, fish, prior) = (0.3,0.6,0.1)"])
-    #Prior information
-    model_labels.append(["Uniform wavelet amp priors: [-10, -5]"])
-    
-    with open(filepath+'/run_info.json' , 'w') as fout:
-        json.dump(model_labels, fout, sort_keys=True,
-                indent=4, separators=(',', ': '))
+
+    #Creates the logger for the program and configures it.
+    qb_logger = logging.getLogger('QB_logger')
+    logging.basicConfig(filename = filepath + "/QB.log",
+                        filemode="a",
+                        level = logging.ERROR,
+                        format='%(levelname)s - %(message)s')
 
     #samples, acc_fraction, swap_record, rj_record, ptas, log_likelihood, betas, PT_acc
     _, _, _, _, _, _, _, _ = QuickBurst_MCMC.run_qb(N_slow, T_max, n_chain, [psr,],
@@ -180,4 +180,7 @@ for psr in psrs:
                                                                         #per_psr_rn_start_file=RN_start_file,
                                                                         n_fish_update = n_fish_update,
                                                                         savepath=savepath, save_every_n=100,
-                                                                        n_fast_to_slow=projection_updates, thin = thinning)
+                                                                        n_fast_to_slow=projection_updates, thin = thinning,
+                                                                        write_run_parameters_to_file = True,
+                                                                        data_directory = filepath)
+    
