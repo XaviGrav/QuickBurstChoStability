@@ -225,7 +225,7 @@ class QuickBurst:
             try:
                 _ = self.TN_calculator()
             except sl.LinAlgError as e:
-                qb_logger.error({e}, exc_info=True)
+                self.qb_logger.error({e}, exc_info=True)
                 return (-1.0)*np.inf
 
         self.glitch_pulsars_previous = np.copy(self.glitch_pulsars)
@@ -451,7 +451,7 @@ class QuickBurst:
             try:
                 temp_logdetphi = self.TN_calculator()
             except sl.LinAlgError as e:
-                qb_logger.error({e}, exc_info=True)
+                self.qb_logger.error({e}, exc_info=True)
                 return (-1.0)*np.inf
             dif_flag = np.ones((self.Nwavelet + self.Nglitch))
         if 1 in dif_flag:
